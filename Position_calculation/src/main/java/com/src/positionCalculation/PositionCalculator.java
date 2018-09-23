@@ -150,4 +150,8 @@ public class PositionCalculator {
 		}
 		writer.close();
 	}
+	public static void main(String args[]) throws JsonParseException, JsonMappingException, IOException {
+		PositionCalculator posCalc = new PositionCalculator();
+		posCalc.writeFinalResult();
+	}
 }
