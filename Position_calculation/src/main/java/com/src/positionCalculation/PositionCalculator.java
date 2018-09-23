@@ -124,6 +124,28 @@ public class PositionCalculator {
 				endOfDayPositionMap.put(instrument, endOfDayPositionList);
 			}
 		}
+		
+		/*  check which instrument's are not present in processed map and 
+		 *  present in input position map add them directly to end of day position map with delta marked as 0
+		 */
+		for(Map.Entry<String, ArrayList<ReadInputPositionFile>> entry : inputPositionMap.entrySet()) {
+			if(processedInstruments.contains(entry.getKey())) {
+				System.out.println("Instrument was processed and present in transaction file");
+			}else {
+				ArrayList<EndOfDay_PositionFile> eodFileList = new ArrayList<EndOfDay_PositionFile>();
+				for(ReadInputPositionFile readFile : entry.getValue()) {
+					EndOfDay_PositionFile eodFile = new EndOfDay_PositionFile();
+					eodFile.setInstrument(readFile.getInstrument());
+					eodFile.setAccount(readFile.getAccount());
+					eodFile.setAccountType(readFile.getAccountType());
+					eodFile.setQuantity(readFile.getQuantity());
+					eodFile.setDelta(0);
+					eodFileList.add(eodFile);
+				}
+				endOfDayPositionMap.put(entry.getKey(),eodFileList);
+			}
+		}
+		
 		return endOfDayPositionMap;
 	}
 
@@ -133,7 +155,6 @@ public class PositionCalculator {
 	 */
 	public void writeFinalResult() throws JsonParseException, JsonMappingException, IOException {
 		Properties prop = utils.load_Properties();
-		System.out.println(prop.getProperty("inputPositionFileLocation"));
 		String inputPositionFileLocation = prop.getProperty("inputPositionFileLocation");
 		String transactionFileLocation = prop.getProperty("transactionFileLocation");
 		HashMap<String, ArrayList<EndOfDay_PositionFile>> endOfDayPositionFile = new HashMap<String, ArrayList<EndOfDay_PositionFile>>();
